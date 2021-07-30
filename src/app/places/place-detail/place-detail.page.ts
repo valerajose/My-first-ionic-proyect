@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 import { Place } from '../place.interfaz';
 import { PlacesServicesService } from '../places-services.service';
 
@@ -12,7 +13,7 @@ export class PlaceDetailPage implements OnInit {
 
   place: Place
 
-  constructor(private activatedRoute:ActivatedRoute, private placesServices:PlacesServicesService) { }
+  constructor(private activatedRoute:ActivatedRoute, private placesServices:PlacesServicesService, private router: Router, private alertCtrl:AlertController) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(paramMap =>{
@@ -23,9 +24,25 @@ export class PlaceDetailPage implements OnInit {
     })
   }
 
-  deletePlace(){
-    this.placesServices.deletePlace(this.place.id)
-    console.log("klk perro")
+  async deletePlace(){
+    const alerElement = await this.alertCtrl.create({
+      header: '¿Estas seguro de eliminar?',
+      message: 'Be careful',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          handler: () =>{
+            this.placesServices.deletePlace(this.place.id);
+            this.router.navigate(['/places']);
+          }
+        }
+      ]      
+    });
+    await alerElement.present();
   }
 
 
